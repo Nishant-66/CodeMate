@@ -1,10 +1,12 @@
 import React from 'react';
-import { Outlet, Link} from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { Footer } from './Footer';
+import {useState} from 'react';
 
-let user=false;
+let user=true;
 export function Home() {
-  
+  const [dropdown,setdropdown]=useState(false);
+  const navigate=useNavigate();
   return (
   <div className="min-h-screen flex flex-col bg-slate-900 text-white">
   <div className="w-full shadow-md bg-slate-800">
@@ -21,7 +23,55 @@ export function Home() {
     </button>
     </Link>
       )}
-    {/* Here i will add the logic of logged in user .. for now i just want to test that's why i am using user as a boolean to check the ui  */}
+    {/* Added the ui for logged in user */}
+    {user && (
+  <div className="relative">
+    <img
+      src={
+        user.image || '/defaultuser.png'
+      }
+      alt="User"
+      className="w-10 h-10 rounded-full cursor-pointer border-2 border-indigo-500"
+      onClick={() => setdropdown((prev) => !prev)} 
+    />
+    {dropdown && (
+    <div className="absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg py-2 z-50">
+    <Link
+      to="/profile"
+      className="block px-4 py-2 text-sm hover:bg-slate-700"
+      onClick={()=>setdropdown(false)}
+      >
+       Edit Profile
+    </Link>
+    <Link
+      to="/connections"
+      className="block px-4 py-2 text-sm hover:bg-slate-700"
+      onClick={()=>setdropdown(false)}
+      >
+      Connections
+    </Link>
+    <Link
+      to="/changepassword"
+      className="block px-4 py-2 text-sm hover:bg-slate-700"
+      onClick={()=>setdropdown(false)}
+      >
+      ChangePassword
+    </Link>
+    <button
+      className="block w-full text-left px-4 py-2 text-sm hover:bg-slate-700"
+      onClick={() => {
+      user=false;
+      setdropdown(false)
+      navigate('/');
+      }}
+      >
+      Logout
+    </button>
+    </div>
+    )}
+  </div>
+)}
+
     </div>
     </div>
     </div>
