@@ -4,15 +4,17 @@ const dotenv=require('dotenv');
 dotenv.config();
 const connectDB=require('./config/database.js');
 const cookieParser=require('cookie-parser');
-const {signup, login, logout}=require('./controllers/auth.js');
+
 app.use(cookieParser());
 app.use(express.json());
 
 const port=process.env.PORT||3000;
+const authRouter = require("./routes/auth");
+const requestRouter = require("./routes/request");
+app.use("/", authRouter);
 
-app.post('/signup',signup);
-app.post('/login',login);
-app.post('/logout',logout);
+app.use("/", requestRouter);
+
 connectDB().then(()=>{
     console.log('Database connection established...')
     app.listen(port,()=>{
