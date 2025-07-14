@@ -2,11 +2,27 @@ import React from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { Footer } from './Footer';
 import {useState} from 'react';
-
-let user=true;
+import { BASE_URL } from "../utils/constants";
+import { removeUser } from "../utils/userSlice";
+import {useSelector,useDispatch} from 'react-redux'
+import axios from 'axios';
 export function Home() {
+  const user =useSelector((store)=>store.user)
+  const dispatch=useDispatch();
   const [dropdown,setdropdown]=useState(false);
   const navigate=useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(BASE_URL + "/logout", {}, { withCredentials: true });
+      dispatch(removeUser());
+      setdropdown(false)
+      return navigate("/login");
+    } catch (err) {
+      // Error logic maybe redirect to error page
+      console.log(err);
+    }
+  };
   return (
   <div className="min-h-screen flex flex-col bg-slate-900 text-white">
   <div className="w-full shadow-md bg-slate-800">
@@ -59,11 +75,7 @@ export function Home() {
     </Link>
     <button
       className="block w-full text-left px-4 py-2 text-sm hover:bg-slate-700"
-      onClick={() => {
-      user=false;
-      setdropdown(false)
-      navigate('/');
-      }}
+      onClick={handleLogout}
       >
       Logout
     </button>
@@ -79,7 +91,9 @@ export function Home() {
 
   
   
-  <Outlet className="flex-grow" />
+  <div className="flex-grow">
+  <Outlet />
+  </div>
 
   
   <Footer />

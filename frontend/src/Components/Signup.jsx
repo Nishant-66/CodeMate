@@ -1,17 +1,45 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
+import {useState} from 'react';
+import axios from 'axios'
 export function Signup(){
+    const[formData,setformData]=useState({firstName:"",lastName:"",emailId:"",password:""});
+       function changeHandler(e){
+       
+        const{name,value}=e.target;
+        setformData((prev)=>{
+           return {
+          ...prev,
+          [name]: value
+       };
+        })
     
+       }
+       const handleSignUp=async(e)=>{
+           e.preventDefault(); 
+           try{
+           await axios.post('http://localhost:3000/signup', formData,{withCredentials:true})
+
+           }
+           catch(err){
+             console.log(err);
+           }
+       
+          }
+       
     return (
       <div className=" flex items-center justify-center bg-slate-900 px-4 py-10">
       <div className="w-full max-w-md bg-slate-800 p-8 rounded-2xl shadow-md">
       <h2 className="text-2xl font-bold text-center text-white mb-6">Sign Up</h2>
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSignUp}>
       <div>
       <label className="block text-sm font-medium text-slate-300 mb-1">First Name</label>
       <input
         type="text"
         className="w-full bg-slate-700 text-white border border-slate-600 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        name='firstName'
+        value={formData.firstName}
+        onChange={changeHandler}
         />
       </div>
       <div>
@@ -19,6 +47,9 @@ export function Signup(){
       <input
         type="text"
         className="w-full bg-slate-700 text-white border border-slate-600 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        name='lastName'
+        value={formData.lastName}
+        onChange={changeHandler}
         />
       </div>
       <div>
@@ -26,6 +57,9 @@ export function Signup(){
       <input
         type="email"
         className="w-full bg-slate-700 text-white border border-slate-600 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        name='emailId'
+        value={formData.emailId}
+        onChange={changeHandler}
         />
       </div>
       <div>
@@ -33,6 +67,9 @@ export function Signup(){
       <input
         type="password"
         className="w-full bg-slate-700 text-white border border-slate-600 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        name='password'
+        value={formData.password}
+        onChange={changeHandler}
         />
       </div>
       <div>

@@ -8,10 +8,13 @@ import {Profile} from './Components/Profile'
 import {Connections} from './Components/Connections'
 import{Feed} from './Components/Feed'
 import {ChangePassword} from './Components/ChangePassword'
+import { Provider } from "react-redux";
+import appStore from "./utils/appStore";
 function App(){
   return (
     <div>
-      <BrowserRouter>
+       <Provider store={appStore}>
+        <BrowserRouter>
        <Routes>
         <Route path="/" element={<Home></Home>} >
         <Route path="/" element={<Hero/>}/>
@@ -24,6 +27,8 @@ function App(){
         </Route>
        </Routes>
       </BrowserRouter>
+       </Provider>
+      
 
       
     </div>
