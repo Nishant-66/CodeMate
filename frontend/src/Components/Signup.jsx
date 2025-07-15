@@ -2,6 +2,11 @@ import React from 'react'
 import {Link} from 'react-router-dom'
 import {useState} from 'react';
 import axios from 'axios'
+import { useDispatch } from 'react-redux';
+import { addUser } from "../utils/userSlice";
+import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../utils/constants";
+ import { toast } from 'react-toastify';
 export function Signup(){
     const[formData,setformData]=useState({firstName:"",lastName:"",emailId:"",password:""});
        function changeHandler(e){
@@ -15,14 +20,21 @@ export function Signup(){
         })
     
        }
+       const dispatch =useDispatch();
+       const navigate = useNavigate();
        const handleSignUp=async(e)=>{
            e.preventDefault(); 
            try{
-           await axios.post('http://localhost:3000/signup', formData,{withCredentials:true})
+           const res=await axios.post(BASE_URL + "/signup", formData,{withCredentials:true})
+           console.log(res);
+           dispatch(addUser(res.data.data))
+           toast.success("Signup successful");
+           return navigate("/feed");
 
            }
            catch(err){
              console.log(err);
+             toast.error(err.response.data);
            }
        
           }

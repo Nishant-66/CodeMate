@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { addUser } from "../utils/userSlice";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
-
+ import { toast } from 'react-toastify';
 export function Login(){
    const[formData,setformData]=useState({emailId:"",password:""});
    function changeHandler(e){
@@ -29,10 +29,12 @@ export function Login(){
      const res=await axios.post(BASE_URL + "/login",formData,{withCredentials:true});
     
      dispatch(addUser(res.data.data))
+     toast.success("Login successful");
      return navigate("/feed");
     }
     catch(err){
       console.log(err);
+      toast.error(err.response.data);
     }
 
    }

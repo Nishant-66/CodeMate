@@ -6,6 +6,7 @@ import { BASE_URL } from "../utils/constants";
 import { removeUser } from "../utils/userSlice";
 import {useSelector,useDispatch} from 'react-redux'
 import axios from 'axios';
+import { toast } from 'react-toastify';
 export function Home() {
   const user =useSelector((store)=>store.user)
   const dispatch=useDispatch();
@@ -16,11 +17,12 @@ export function Home() {
     try {
       await axios.post(BASE_URL + "/logout", {}, { withCredentials: true });
       dispatch(removeUser());
-      setdropdown(false)
-      return navigate("/login");
+      setdropdown(false);
+      toast.success("Logout successful");
+      return navigate("/");
     } catch (err) {
-      // Error logic maybe redirect to error page
-      console.log(err);
+     console.log(err);
+     toast.error(err.response.data);
     }
   };
   return (
