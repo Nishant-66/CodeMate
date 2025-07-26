@@ -29,7 +29,7 @@ export function Signup(){
            console.log(res);
            dispatch(addUser(res.data.data))
            toast.success("Signup successful");
-           return navigate("/feed");
+           return navigate("/profile");
 
            }
            catch(err){

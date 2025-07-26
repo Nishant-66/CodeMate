@@ -1,9 +1,9 @@
 import React from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { Footer } from './Footer';
-import {useState} from 'react';
+import {useState,useEffect} from 'react';
 import { BASE_URL } from "../utils/constants";
-import { removeUser } from "../utils/userSlice";
+import { removeUser,addUser } from "../utils/userSlice";
 import {useSelector,useDispatch} from 'react-redux'
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -25,6 +25,26 @@ export function Home() {
      toast.error(err.response.data);
     }
   };
+
+  const userData = useSelector((store) => store.user);
+  const fetchUser = async () => {
+    
+    try {
+      const res = await axios.get(BASE_URL + "/profile/view", {
+        withCredentials: true,
+      });
+      console.log(res);
+      dispatch(addUser(res.data));
+    } catch (err) {
+      if (err.status === 401) {
+        navigate("/");
+      }
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    fetchUser();
+  }, []);
   return (
   <div className="min-h-screen flex flex-col bg-slate-900 text-white">
   <div className="w-full shadow-md bg-slate-800">
@@ -46,7 +66,7 @@ export function Home() {
   <div className="relative">
     <img
       src={
-        user.image || '/defaultuser.png'
+        user.photoUrl || '/defaultuser.png'
       }
       alt="User"
       className="w-10 h-10 rounded-full cursor-pointer border-2 border-indigo-500"

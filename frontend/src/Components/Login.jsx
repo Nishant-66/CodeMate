@@ -30,7 +30,7 @@ export function Login(){
     
      dispatch(addUser(res.data.data))
      toast.success("Login successful");
-     return navigate("/feed");
+     return navigate("/profile");
     }
     catch(err){
       console.log(err);
