@@ -58,7 +58,7 @@ const connectionResponse = async (req, res) => {
     }
 
     const request = await ConnectionRequest.findOne({
-      _id: requestId,
+      fromUserId: requestId,
       toUserId: loggedInUser._id,
       status: "interested",
     });
