@@ -89,6 +89,13 @@ export function Home() {
       Connections
     </Link>
     <Link
+          to="/requests"
+          className="block px-4 py-2 text-sm hover:bg-slate-700"
+          onClick={() => setdropdown(false)}
+        >
+          Requests
+        </Link>
+    <Link
       to="/changepassword"
       className="block px-4 py-2 text-sm hover:bg-slate-700"
       onClick={()=>setdropdown(false)}

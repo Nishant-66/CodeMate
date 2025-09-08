@@ -8,6 +8,8 @@ import {Profile} from './Components/Profile'
 import {Connections} from './Components/Connections'
 import{Feed} from './Components/Feed'
 import {ChangePassword} from './Components/ChangePassword'
+import {Requests} from "./Components/Requests";
+import {Chat} from "./Components/Chat";
 import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
 function App(){
@@ -23,7 +25,9 @@ function App(){
         <Route path="/signup" element={<Signup/>}/>
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/connections" element={<Connections/>}/>
+         <Route path="/requests" element={<Requests />} />
         <Route path="/changepassword" element={<ChangePassword/>}/>
+        <Route path="/chat/:targetUserId" element={<Chat />} />
         </Route>
        </Routes>
       </BrowserRouter>

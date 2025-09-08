@@ -12,10 +12,10 @@ const getProfile=(req,res)=>{
 
 const editProfile=async(req,res)=>{
     try{
+     
  const allowedEditFields = [
     "firstName",
     "lastName",
-    "emailId",
     "photoUrl",
     "gender",
     "age",

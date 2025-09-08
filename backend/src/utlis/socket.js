@@ -1,7 +1,9 @@
-const socket = require("socket.io");
+const socketIO = require("socket.io");
 const crypto = require("crypto");
 const { Chat } = require("../models/chat");
-const ConnectionRequest = require("../models/connectionRequest");
+
+const activeUsers = new Map();
+const socketToUser = new Map();
 
 const getSecretRoomId = (userId, targetUserId) => {
   return crypto
@@ -11,24 +13,28 @@ const getSecretRoomId = (userId, targetUserId) => {
 };
 
 const initializeSocket = (server) => {
-  const io = socket(server, {
+  const io = socketIO(server, {
     cors: {
       origin: "http://localhost:5173",
+      credentials: true,
     },
   });
 
   io.on("connection", (socket) => {
     socket.on("joinChat", ({ firstName, userId, targetUserId }) => {
-      const roomId = getSecretRoomId(userId, targetUserId);
-      console.log(firstName + " joined Room : " + roomId);
-      socket.join(roomId);
+      if (!userId) return;
+      if (!activeUsers.has(userId)) activeUsers.set(userId, new Set());
+      activeUsers.get(userId).add(socket.id);
+      socketToUser.set(socket.id, userId);
+      if (targetUserId) {
+        const roomId = getSecretRoomId(userId, targetUserId);
+        socket.join(roomId);
+      }
     });
 
     socket.on("sendMessage", async ({ firstName, lastName, userId, targetUserId, text }) => {
       try {
-        const roomId = getSecretRoomId(userId, targetUserId);
-        console.log(firstName + " " + text);
-
+        if (!userId || !targetUserId) return;
         let chat = await Chat.findOne({
           participants: { $all: [userId, targetUserId] },
         });
@@ -40,20 +46,55 @@ const initializeSocket = (server) => {
           });
         }
 
-        chat.messages.push({
+        const messageEntry = {
           senderId: userId,
           text,
-        });
+          createdAt: new Date(),
+        };
 
+        chat.messages.push(messageEntry);
         await chat.save();
 
-        io.to(roomId).emit("messageReceived", { firstName, lastName, text });
+        const payload = {
+          senderId: userId,
+          firstName,
+          lastName,
+          text,
+          createdAt: messageEntry.createdAt.toISOString(),
+        };
+
+        const roomId = getSecretRoomId(userId, targetUserId);
+        io.to(roomId).emit("messageReceived", payload);
+
+        const targetSockets = activeUsers.get(targetUserId);
+        if (targetSockets) {
+          targetSockets.forEach((sid) => {
+            io.to(sid).emit("messageReceived", payload);
+          });
+        }
+
+        const senderSockets = activeUsers.get(userId);
+        if (senderSockets) {
+          senderSockets.forEach((sid) => {
+            if (sid !== socket.id) io.to(sid).emit("messageReceived", payload);
+          });
+        }
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     });
 
-    socket.on("disconnect", () => {});
+    socket.on("disconnect", () => {
+      const userId = socketToUser.get(socket.id);
+      if (userId) {
+        const s = activeUsers.get(userId);
+        if (s) {
+          s.delete(socket.id);
+          if (s.size === 0) activeUsers.delete(userId);
+        }
+        socketToUser.delete(socket.id);
+      }
+    });
   });
 };
 

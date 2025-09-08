@@ -8,7 +8,7 @@ const connectionDecision = async (req, res) => {
     const toUserId = req.params.toUserId;
     const status = req.params.status;
 
-    const allowedStatus = ['interested', 'ignore'];
+    const allowedStatus = ['interested', 'ignored'];
     if (!allowedStatus.includes(status)) {
       return res.status(400).json({ message: "Invalid status type: " + status });
     }
@@ -56,6 +56,9 @@ const connectionResponse = async (req, res) => {
     if (!allowedStatus.includes(status)) {
       return res.status(400).json({ message: "Status not allowed!" });
     }
+    console.log(requestId);
+     console.log(status);
+      console.log(loggedInUser._id);
 
     const request = await ConnectionRequest.findOne({
       fromUserId: requestId,
